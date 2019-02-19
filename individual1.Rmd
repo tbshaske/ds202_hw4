@@ -1,0 +1,16 @@
+---
+title: "individual1.Rmd"
+author: Sonya Haan
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Individual Questions
+
+```{r}
+HAPPY <- readRDS("C:/Users/sonya/Downloads/HAPPY.rds")
+names(HAPPY)
+```
