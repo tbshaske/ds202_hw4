@@ -11,6 +11,239 @@ knitr::opts_chunk$set(echo = TRUE)
 ## Individual Questions
 
 ```{r}
-HAPPY <- readRDS("C:/Users/sonya/Downloads/HAPPY.rds")
+HAPPY <- readRDS("HAPPY.rds")
+library(dplyr)
+library(ggplot2)
+library(ggmosaic)
 names(HAPPY)
 ```
+`FINRELA` is the opinion of family income.
+`WTSSALL` weight of variables.
+
+## Data Cleaning
+```{r}
+HAPPY2 <- HAPPY
+NAstrings <- c("IAP", "DK", "NA")
+```
+
+**HAPPY**
+```{r}
+is.na(HAPPY2$HAPPY) <- HAPPY$HAPPY %in% NAstrings
+class(HAPPY$HAPPY)
+HAPPY2$HAPPY <- factor(HAPPY2$HAPPY)
+class(HAPPY2$HAPPY)
+levels(HAPPY2$HAPPY)
+ggplot(data = HAPPY2, aes(x=HAPPY)) + geom_bar()
+```
+
+The level of the factor `HAPPY` with the highest frequency was "PRETTY HAPPY," followed by "VERY HAPPY," "NOT TOO HAPPY," and then "NA".
+
+**YEAR**
+```{r}
+is.na(HAPPY2$YEAR) <- HAPPY$YEAR %in% NAstrings
+class(HAPPY$YEAR)
+# should be integer, no need to change
+ggplot(data = HAPPY2, aes(x=YEAR)) + geom_histogram(bins=20)
+```
+
+There does not appear to be a clear trend in the number of observations in the data set per year. 
+
+**AGE**
+```{r}
+is.na(HAPPY2$AGE) <- HAPPY$AGE %in% NAstrings
+class(HAPPY$AGE)
+HAPPY2$AGE <- factor(HAPPY2$AGE)
+HAPPY2 <- HAPPY2 %>% mutate(AGE = recode(AGE, "89 OR OLDER" = "89"))
+HAPPY2$AGE <- as.numeric(HAPPY2$AGE)
+class(HAPPY2$AGE)
+ggplot(HAPPY2, aes(x=AGE)) + geom_histogram(bins=15)
+```
+
+The `AGE` with the highest number of records is approximately 18. After this point, we see the number of records decreases as the `AGE` increases.
+
+**SEX**
+```{r}
+is.na(HAPPY2$SEX) <- HAPPY$SEX %in% NAstrings
+class(HAPPY$SEX)
+HAPPY2$SEX <- factor(HAPPY$SEX)
+class(HAPPY2$SEX)
+levels(HAPPY2$SEX)
+ggplot(data=HAPPY2, aes(x=SEX)) + geom_bar()
+```
+
+The data set contains more records for "FEMALE" than "MALE" respondents. 
+
+**MARITAL**
+```{r}
+is.na(HAPPY2$MARITAL) <- HAPPY$MARITAL %in% NAstrings
+class(HAPPY$MARITAL)
+HAPPY2$MARITAL <- factor(HAPPY$MARITAL)
+class(HAPPY2$MARITAL)
+levels(HAPPY2$MARITAL)
+HAPPY2$MARITAL <- factor(HAPPY2$MARITAL, levels(HAPPY2$MARITAL)[c(3,2,4,1,5)])
+levels(HAPPY2$MARITAL)
+ggplot(data=HAPPY2, aes(x=MARITAL)) + geom_bar()
+```
+
+The `MARITAL` status with the most records is "MARRIED," followed by "NEVER MARRIED," "DIVORCED," "WIDOWED," "SEPARATED," and "NA."
+
+**DEGREE**
+```{r}
+is.na(HAPPY2$DEGREE) <- HAPPY$DEGREE %in% NAstrings
+class(HAPPY$DEGREE)
+HAPPY2$DEGREE <- factor(HAPPY2$DEGREE)
+class(HAPPY2$DEGREE)
+levels(HAPPY2$DEGREE)
+HAPPY2$DEGREE <- factor(HAPPY2$DEGREE, levels(HAPPY2$DEGREE)[c(5,3,4,1,2)])
+levels(HAPPY2$DEGREE)
+ggplot(data=HAPPY2, aes(x=DEGREE)) + geom_bar()
+```
+
+Most respondents in the data set have a "HIGH SCHOOL" degree. The frequency of the other`DEGREE` types in descending order is "LT HIGH SCHOOL," "BACHELOR," "GRADUATE," "JUNIOR COLLEGE," and "NA".
+
+**FINRELA**
+```{r}
+is.na(HAPPY2$FINRELA) <- HAPPY$FINRELA %in% NAstrings
+class(HAPPY$FINRELA)
+HAPPY2$FINRELA <- factor(HAPPY2$FINRELA)
+class(HAPPY2$FINRELA)
+levels(HAPPY2$FINRELA)
+HAPPY2$FINRELA <- factor(HAPPY2$FINRELA, levels(HAPPY2$FINRELA)[c(5,3,2,1,4)])
+levels(HAPPY2$FINRELA)
+ggplot(data=HAPPY2, aes(x=FINRELA)) + geom_bar() + coord_flip()
+```
+
+From the bar chart we see most respondents reported "AVERAGE" for `FINRELA`. More reported "BELOW AVERAGE" than reported "ABOVE AVERAGE" and more reported "FAR BELOW AVERAGE" than reported "FAR ABOVE AVERAGE." There are also more "NA" values than the number of "FAR BELOW AVERAGE" and "FAR ABOVE AVERAGE."
+
+**HEALTH**
+```{r}
+is.na(HAPPY2$HEALTH) <- HAPPY$HEALTH %in% NAstrings
+class(HAPPY$HEALTH)
+HAPPY2$HEALTH <- factor(HAPPY2$HEALTH)
+class(HAPPY2$HEALTH)
+levels(HAPPY2$HEALTH)
+HAPPY2$HEALTH <- factor(HAPPY2$HEALTH, levels(HAPPY2$HEALTH)[c(4,2,3,1)])
+levels(HAPPY2$HEALTH)
+ggplot(data=HAPPY2, aes(x=HEALTH)) + geom_bar()
+```
+
+The most commonly reported level for `HEALTH` was "GOOD," followed by "NA," "EXCELLENT," "FAIR," and "POOR".
+
+**WTSSALL**
+```{r}
+is.na(HAPPY2$WTSSALL) <- HAPPY2$WTSSALL %in% NAstrings
+class(HAPPY2$WTSSALL)
+ggplot(data=HAPPY2, aes(x=WTSSALL)) + geom_histogram(bins=30)
+```
+
+It appears the distribution of the `WTSSALL` numeric variable is right skewed.
+
+**PARTYID**
+```{r}
+is.na(HAPPY2$PARTYID) <- HAPPY$PARTYID %in% NAstrings
+class(HAPPY$PARTYID)
+HAPPY2$PARTYID <- factor(HAPPY2$PARTYID)
+class(HAPPY2$PARTYID)
+levels(HAPPY2$PARTYID)
+HAPPY2$PARTYID <- factor(HAPPY2$PARTYID, levels(HAPPY2$PARTYID)[c(7,4,1,3,2,5,8,6)])
+levels(HAPPY2$PARTYID)
+ggplot(data=HAPPY2, aes(x=PARTYID)) + geom_bar() + coord_flip()
+```
+
+The most commonly reported `PARTYID` was "NOT STR DEMOCRAT," then followed by "STRONG DEMOCRAT," "NOT STR REPUBLICAN," "INDEPENDENT," "IND,NEAR DEM," "STRONG REPUBLICAN," "IND,NEAR REP," "OTHER PARTY," and "NA".
+
+**POLVIEWS**
+```{r}
+is.na(HAPPY2$POLVIEWS) <- HAPPY$POLVIEWS %in% NAstrings
+class(HAPPY$POLVIEWS)
+HAPPY2$POLVIEWS <- factor(HAPPY2$POLVIEWS)
+class(HAPPY2$POLVIEWS)
+levels(HAPPY2$POLVIEWS)
+HAPPY2$POLVIEWS <- factor(HAPPY2$POLVIEWS, levels(HAPPY2$POLVIEWS)[c(2,4,7,5,6,1,3)])
+levels(HAPPY2$POLVIEWS)
+ggplot(data=HAPPY2, aes(x=POLVIEWS)) + geom_bar() + coord_flip()
+```
+
+"MODERATE" was the most commonly reported `POLVIEWS` by a considerable margin. The other `POLVIEWS` in decreasing order of frequency were "NA," "SLGHTLY CONSERVATIVE," "CONSERVATIVE," "SLIGHTLY LIBERAL," "LIBERAL," "EXTRMLY CONSERVATIVE," and "EXTREMELY LIBERAL."
+
+
+
+##Data Exploration
+
+(@) Investigate the distribution of two different variables.
+
+**Distribution of `PARTYID`.** 
+```{r}
+ggplot(data=HAPPY2, aes(x=PARTYID)) + geom_bar() + coord_flip()
+
+#Rearrange bars in order of frequency and remove NA values. 
+library(forcats)
+noNAPARTY <- HAPPY2 %>% filter(!is.na(PARTYID))
+plot1 <- ggplot(mutate(noNAPARTY, PARTYID = fct_infreq(PARTYID))) + geom_bar(aes(x = PARTYID)) + xlab("PARTYID") + ggtitle("PARTYID Distribution") + coord_flip() 
+plot1
+
+#Compare distribution of `PARTYID` by `SEX`.
+plot2 <- plot1 + facet_wrap(~SEX) + ggtitle("PARTYID by SEX")
+plot2
+
+# A different visualization to compare distributin of `PARTYID` by `SEX`.
+plot1 + geom_bar(aes(x=PARTYID, fill=SEX)) + ggtitle("PARTYID by SEX (2)")
+
+
+```
+
+Because the data set contains more female respondents than male respondents, the distribution of `PARTYID` for females has a greater impact on the overall distribution of `PARTYID` than the distribution of `PARTYID` for males.
+
+**Distribution of `MARITAL`**
+```{r}
+ggplot(data=HAPPY2, aes(x=MARITAL)) + geom_bar()
+
+#Rearrange bars in order of frequency and remove NA values. 
+noNAMAR <- HAPPY2 %>% filter(!is.na(MARITAL))
+marplot1 <- ggplot(mutate(noNAMAR, MARITAL = fct_infreq(MARITAL))) + geom_bar(aes(x = MARITAL)) + xlab("MARITAL") + ggtitle("MARITAL Distribution")
+marplot1
+
+#Look at distribution of `MARITAL` based on age.
+marplot2 <- ggplot(noNAMAR, aes(x=MARITAL, y=AGE)) + geom_boxplot() + ggtitle("MARITAL by AGE")
+marplot2
+```
+
+From this boxplot we see that the distribution of `MARITAL` is impacted by `AGE`. As we would expect, the median age of those who are "NEVER MARRIED" is lower than any other `MARITAL` status, and similarly, the median age of those who are "WIDOWED" is higher than any other `MARITAL` status.
+
+(@) Investigate the relationship between happiness and three other variables in the data.
+**`HAPPY` and ` AGE`**
+```{r}
+ggplot(HAPPY2, aes(x=HAPPY, y=AGE)) + geom_boxplot() + ggtitle("HAPPY by AGE")
+# Remove NA values.
+noNAHAPPY <- HAPPY2 %>% filter(!is.na(HAPPY))
+ggplot(noNAHAPPY, aes(x=HAPPY, y=AGE)) + geom_boxplot() + ggtitle("HAPPY by AGE")
+```
+
+It doesn't appear the boxplots for each level of `HAPPY` are impacted by `AGE` as they all have similar median values for `AGE` and the inner quartile range of each boxplot is approximately the same.
+
+**`HAPPY` and `SEX`**
+```{r}
+ggplot(noNAHAPPY) + geom_mosaic(aes(x=product(SEX), fill=HAPPY)) + ggtitle("HAPPY by SEX") + ylab("HAPPY") + xlab("SEX")
+#ggplot(HAPPY2) + geom_mosaic(aes(x=product(AGE), fill=HAPPY))
+#ggplot(data=HAPPY2, aes(x=HAPPY, y=AGE)) + geom_point()
+#ggplot(HAPPY2) + geom_mosaic(aes(x=product(HAPPY), fill=DEGREE)) + facet_grid(SEX ~ MARITAL)
+
+```
+
+It doesn't appear that one `SEX` is significantly more or less happy than the other. This mosaic plot shows that `SEX` does not affect `HAPPY`. 
+
+**`HAPPY` and `FINRELA`**
+```{r}
+noNAHAPPY <- noNAHAPPY %>% filter(!is.na(FINRELA))
+ggplot(noNAHAPPY) + geom_mosaic(aes(x=product(HAPPY), fill=FINRELA)) + ggtitle("HAPPY by FINRELA") + ylab("FINRELA") + xlab("HAPPY")
+```
+
+There is a lot of information to be observed from this mosaic plot. One thing I noticed was that those who have `FINRELA` of "FAR ABOVE AVERAGE" do not appear to be significantly happier. There are people who are "FAR ABOVE AVERAGE" and "VERY HAPPY," but there are slo those who are "NOT TOO HAPPY" or only "PRETTY HAPPY."
+  People who are "ABOVE AVERAGE" in `FINRELA` are more often "VERY HAPPY" than they are "PRETTY HAPPY," and more often "PRETTY HAPPY" than they are "NOT TOO HAPPY."
+  People who are "AVERAGE" are about equally likely to be "PRETTY HAPPY" as they are "VERY HAPPY," but there are fewer "AVERAGE" people who are "NOT TOO HAPPY."
+  "BELOW AVERAGE" people are most  commonly "NOT TOO HAPPY," but some are "PRETTY HAPPY," and others may be "VERY HAPPY."
+  Finally, those who are "FAR BELOW AVERAGE" are most commonly "NOT TOO HAPPY." There are people who are "FAR BELOW AVERAGE" that are "PRETTY HAPPY" and a few who are "VERY HAPPY".
+  Overall it seems that `FINRELA` can impact a person's `HAPPY` level, but it does ultimately determine their `HAPPY` level.
+
+(@) What do you learn from the data set? Write one or two paragraphs to describe.
+I learned how imporant (and tedious) cleaning a data set can be. I learned that it is important to explore variables individually before exploring the relationships between them. I discovered some detals about the distribution of `PARTYID` and `MARITAL` and I explored the relationship between `HAPPY` and three other variables: `AGE`, `SEX`, and `FINRELA`.  
