@@ -1,0 +1,105 @@
+---
+title: "team"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+HAPPY <- readRDS("C:/Users/Taylor Shaske/Downloads/HAPPY (1).rds")
+data(happy, package="productplots")
+head(happy)
+str(happy)
+HAPPY <- readRDS("C:/Users/Taylor Shaske/Downloads/HAPPY (1).rds")
+knitr::opts_chunk$set(echo=TRUE)
+```
+
+```{r}
+library(dplyr)
+library(ggplot2)
+library(ggmosaic)
+names(HAPPY)
+```
+'FINRELA':description of family income.
+'WTSSALL':weight
+
+#Cleaning
+```{r}
+HAPPY2 <- HAPPY
+NAstrings <- c("IAP", "DK", "NA")
+```
+
+##1. Taylor Shaske
+**Distribution of `MARITAL`**
+```{r}
+data <- HAPPY[!is.na(HAPPY$MARITAL),]
+ggplot(data, aes(x=MARITAL)) + geom_bar(width=1)
+#Rearrange bars in order of frequency and remove NA values. 
+noNAMAR <- HAPPY2 %>% filter(!is.na(MARITAL))
+marplot1 <- ggplot(mutate(noNAMAR, MARITAL =(MARITAL))) + geom_bar(aes(x = MARITAL)) + xlab("MARITAL") + ggtitle("MARITAL Distribution")
+marplot1
+#Look at distribution of `MARITAL` based on age.
+marplot2 <- ggplot(noNAMAR, aes(x=MARITAL, y=AGE)) + geom_boxplot() + ggtitle("MARITAL by AGE")
+marplot2
+```
+The distribution of `MARITAL` appears to relate to `AGE`. The boxplot shows that "widowed" has the highest interquartile numbers and median, while never married has the lowest for both.
+**Distribution of `HEALTH`**
+```{r}
+ggplot(data=HAPPY2, aes(x=HEALTH)) + geom_bar()
+noNAHEALTH <- HAPPY2 %>% filter(!is.na(HEALTH))
+plot1 <- ggplot(mutate(noNAHEALTH, HEALTH =(HEALTH))) + geom_bar(aes(x = HEALTH)) + xlab("HEALTH") + ggtitle("HEALTH Distribution")
+plot1
+plot2 <- ggplot(noNAHEALTH, aes(x=HEALTH, y=AGE)) + geom_boxplot() + ggtitle("HEALTH by AGE")
+plot2
+```
+##2. Sonya Haan
+```{r}
+ggplot(data=HAPPY2, aes(x=MARITAL)) + geom_bar()
+#Rearrange bars in order of frequency and remove NA values. 
+noNAMAR <- HAPPY2 %>% filter(!is.na(MARITAL))
+marplot1 <- ggplot(mutate(noNAMAR, MARITAL = (MARITAL))) + geom_bar(aes(x = MARITAL)) + xlab("MARITAL") + ggtitle("MARITAL Distribution")
+marplot1
+#Look at distribution of `MARITAL` based on age.
+marplot2 <- ggplot(noNAMAR, aes(x=MARITAL, y=AGE)) + geom_boxplot() + ggtitle("MARITAL by AGE")
+marplot2
+```
+
+From this boxplot we see that the distribution of `MARITAL` is impacted by `AGE`. As we would expect, the median age of those who are "NEVER MARRIED" is lower than any other `MARITAL` status, and similarly, the median age of those who are "WIDOWED" is higher than any other `MARITAL` status.
+
+(@) Investigate the relationship between happiness and three other variables in the data.
+**`HAPPY` and ` AGE`**
+```{r}
+ggplot(HAPPY2, aes(x=HAPPY, y=AGE)) + geom_boxplot() + ggtitle("HAPPY by AGE")
+# Remove NA values.
+noNAHAPPY <- HAPPY2 %>% filter(!is.na(HAPPY))
+ggplot(noNAHAPPY, aes(x=HAPPY, y=AGE)) + geom_boxplot() + ggtitle("HAPPY by AGE")
+```
+
+It doesn't appear the boxplots for each level of `HAPPY` are impacted by `AGE` as they all have similar median values for `AGE` and the inner quartile range of each boxplot is approximately the same.
+
+**`HAPPY` and `SEX`**
+```{r}
+ggplot(noNAHAPPY) + geom_mosaic(aes(x=product(SEX), fill=HAPPY)) + ggtitle("HAPPY by SEX") + ylab("HAPPY") + xlab("SEX")
+#ggplot(HAPPY2) + geom_mosaic(aes(x=product(AGE), fill=HAPPY))
+#ggplot(data=HAPPY2, aes(x=HAPPY, y=AGE)) + geom_point()
+#ggplot(HAPPY2) + geom_mosaic(aes(x=product(HAPPY), fill=DEGREE)) + facet_grid(SEX ~ MARITAL)
+```
+
+It doesn't appear that one `SEX` is significantly more or less happy than the other. This mosaic plot shows that `SEX` does not affect `HAPPY`. 
+
+**`HAPPY` and `FINRELA`**
+```{r}
+noNAHAPPY <- noNAHAPPY %>% filter(!is.na(FINRELA))
+ggplot(noNAHAPPY) + geom_mosaic(aes(x=product(HAPPY), fill=FINRELA)) + ggtitle("HAPPY by FINRELA") + ylab("FINRELA") + xlab("HAPPY")
+```
+There is a lot of information to be observed from this mosaic plot. One thing I noticed was that those who have `FINRELA` of "FAR ABOVE AVERAGE" do not appear to be significantly happier. There are people who are "FAR ABOVE AVERAGE" and "VERY HAPPY," but there are slo those who are "NOT TOO HAPPY" or only "PRETTY HAPPY."
+  People who are "ABOVE AVERAGE" in `FINRELA` are more often "VERY HAPPY" than they are "PRETTY HAPPY," and more often "PRETTY HAPPY" than they are "NOT TOO HAPPY."
+  People who are "AVERAGE" are about equally likely to be "PRETTY HAPPY" as they are "VERY HAPPY," but there are fewer "AVERAGE" people who are "NOT TOO HAPPY."
+  "BELOW AVERAGE" people are most  commonly "NOT TOO HAPPY," but some are "PRETTY HAPPY," and others may be "VERY HAPPY."
+  Finally, those who are "FAR BELOW AVERAGE" are most commonly "NOT TOO HAPPY." There are people who are "FAR BELOW AVERAGE" that are "PRETTY HAPPY" and a few who are "VERY HAPPY".
+  Overall it seems that `FINRELA` can impact a person's `HAPPY` level, but it does ultimately determine their `HAPPY` level.
+  
+##3. Taylor Shaske
+From the data set, we learned that some of the factors do affect each other and some do not.Sex and age had to effect on the participants happiness, however, Finrella did affect it according to it's mosaic plot. Through this data set we learned that sometimes when you have a lot of variables you must expore all of them individually first to be able to know if there is a relationship between them later on. We also found that you must really look at all aspects of the graph to know if there is a relationship such as median, max, min, and outliers.
