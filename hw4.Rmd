@@ -1,0 +1,104 @@
+---
+title: "ds202_hw4"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+library(datasets)
+library(dplyr)
+library(ggplot2)
+library(tidyverse)
+cw <- ChickWeight
+```
+
+##1.
+```{r}
+weight0 <- cw %>%
+  group_by(Diet) %>%
+  summarize(NumChicks=n(), avgWeight = mean(weight), sdWeight = sd(weight))
+weight0
+```
+
+##2.
+```{r}
+mm <- cw %>%
+  group_by(Chick) %>%
+  mutate(NumMeasures = n()) %>%
+  ungroup()
+complete <- mm%>%
+  filter(NumMeasures==12)
+head(complete, 3)
+```
+
+##3.
+```{r}
+complete <- complete %>%
+  group_by(Chick) %>%
+  mutate(weightgain = (weight - weight[Time == 0]))
+head(complete, 3)
+```
+
+##4.
+```{r}
+day21 <- complete[complete$Time == 21,]
+a <- ggplot(day21, aes(x=reorder(Diet, weightgain, FUN = median), y=weightgain)) + geom_boxplot() + expand_limits(y=0)
+a <- a + xlab("Diet") + ylab("Weight Gain(Day 21)") + ggtitle("Weight Gain by Diet(by Median Weight Gain)")
+a <- a + theme(plot.title = element_text(hjust=0.5))
+a
+```
+We can tell from the boxplot that for each diet the weight gain for day 21 keeps getting larger.The Diet with the smallest minimum, median, and max weight gain is diet1, while the diet with the largest of all of those is Diet3.
+
+##5.
+```{r}
+b <- complete %>%
+  filter(Time == 21) %>%
+  arrange(desc(weightgain))
+b
+complete %>%
+  filter(Time == 21) %>%
+  arrange(weightgain)
+b %>%
+  ggplot(aes(x = Chick, y = weightgain, fill = Diet)) + geom_col()
+```
+Chick 3 gained the most weight on diet3.
+Chick 27 gained the least weight on diet2.
+
+##6.
+```{r}
+complete %>%
+  filter(Time == 0) %>%
+  arrange(weight)
+complete %>%
+  filter(Time == 0) %>%
+  arrange(desc(weight))
+complete <- complete %>%
+  group_by(Time) %>%
+  mutate(avgWeight = sum(weight) / n()) %>%
+  ungroup()
+complete
+complete %>%
+  filter(Chick %in% c(27,3)) %>%
+  ggplot(aes(x = Time, y = weight, color = Chick)) + geom_line() + geom_smooth(aes(x = Time, y = avgWeight), show.legend = TRUE)
+```
+Lowest Starting weight
+```{r}
+complete %>%
+  filter(Chick %in% c(27)) %>%
+  ggplot(aes(x= Time, y = weight, color = Chick)) + geom_line() + geom_smooth(aes(x = Time, y = avgWeight), show.legend = TRUE)
+```
+
+##7.
+I was very curious about when most of the weight was gained throughout the time period.
+```{r}
+complete %>%
+  group_by(Chick) %>%
+  mutate(weightgain = (weight - weight[Time == 0]))
+complete %>%
+  group_by(Time) %>%
+  mutate(avgWeight = mean(weightgain))
+a <- ggplot(complete, aes(x=avgWeight)) + geom_density(color="blue", fill="pink")
+a <- a + ggtitle("Average Density Weight Gain Plot") + theme(plot.title = element_text(hjust=0.5))
+a
+```
+This graph is telling us that the Chicks grow a lot in the beginning but slow down as they approach 150 grams.
+# ds202_hw4
